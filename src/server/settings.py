@@ -86,7 +86,7 @@ WSGI_APPLICATION = "server.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 config = json.loads(requests.get(f"http://{os.getenv('CONF_APP_IP')}/config/auth").text)
-db = config['config'][0]
+db = config['config']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
