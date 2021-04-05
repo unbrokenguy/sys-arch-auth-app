@@ -29,16 +29,12 @@ class UserViewSet(GenericViewSet, mixins.ListModelMixin):
 
 class AuthViewSet(GenericViewSet):
     serializer_class = UserAuthOutputSerializer
-    permission_classes_by_action = [IsAuthenticated]
-
-    def get_permissions(self):
-        return [AllowAny()]
+    permission_classes = [AllowAny]
 
     @swagger_auto_schema(request_body=UserAuthSignInSerializer)
     @action(methods=["POST"], detail=False)
     def sign_in(self, request, *args, **kwargs):
         data = request.data
-
         try:
             user = authenticate(request, email=data["email"], password=data["password"], )
         except get_user_model().DoesNotExist:
@@ -67,7 +63,7 @@ class AuthViewSet(GenericViewSet):
         try:
             validate_password(serializer.validated_data["password"], user=user)
         except ValidationError as e:
-            return Response(data=[e], status=status.HTTP_400_BAD_REQUEST)
+            return Response(data=e, status=status.HTTP_400_BAD_REQUEST)
 
         user.set_password(serializer.validated_data["password"])
         user.save()
