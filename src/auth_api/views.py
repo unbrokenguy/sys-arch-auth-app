@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.password_validation import validate_password
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status, permissions
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -9,8 +9,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.viewsets import mixins
 from auth_api.models import User
-from auth_api.serializers import UserAuthSignUpSerializer, UserAuthOutputSerializer, \
-    UserSerializer
+from auth_api.serializers import UserAuthSignUpSerializer, UserAuthOutputSerializer, UserSerializer
 
 
 class UserViewSet(GenericViewSet, mixins.ListModelMixin):
@@ -19,7 +18,8 @@ class UserViewSet(GenericViewSet, mixins.ListModelMixin):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-        operation_id="current_user_read", responses={200: UserSerializer()},
+        operation_id="current_user_read",
+        responses={200: UserSerializer()},
     )
     def list(self, request, *args, **kwargs):
         return Response(self.serializer_class(self.request.user, context={"request": request}).data)
@@ -29,6 +29,7 @@ class AuthViewSet(GenericViewSet):
     """
     Auth View Set, handle sign in and sign up process.
     """
+
     serializer_class = UserAuthOutputSerializer
     permission_classes = [AllowAny]
 
@@ -42,7 +43,11 @@ class AuthViewSet(GenericViewSet):
         """
         data = request.data
         try:
-            user = authenticate(request, email=data["email"], password=data["password"], )
+            user = authenticate(
+                request,
+                email=data["email"],
+                password=data["password"],
+            )
         except get_user_model().DoesNotExist:
             raise ValidationError("This user does not exist")
         except KeyError:
@@ -80,4 +85,3 @@ class AuthViewSet(GenericViewSet):
         user.save()
 
         return Response(self.serializer_class(user, context={"request": request}).data)
-

@@ -8,6 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
     """
     User model serializer.
     """
+
     class Meta:
         model = User
         fields = (
@@ -17,13 +18,18 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
         )
 
-        extra_kwargs = {"email": {"read_only": True, }}
+        extra_kwargs = {
+            "email": {
+                "read_only": True,
+            }
+        }
 
 
 class UserAuthOutputSerializer(UserSerializer):
     """
     User model serializer with auth_token field.
     """
+
     auth_token = serializers.SerializerMethodField()
 
     class Meta(UserSerializer.Meta):
@@ -38,6 +44,7 @@ class UserAuthSignInSerializer(serializers.ModelSerializer):
     """
     Sign in data serializer.
     """
+
     class Meta:
         model = User
         fields = ("email", "password")
@@ -47,6 +54,7 @@ class UserAuthSignUpSerializer(serializers.ModelSerializer):
     """
     Sign up data serializer.
     """
+
     class Meta:
         model = User
         fields = ("first_name", "last_name", "email", "password")
@@ -56,5 +64,3 @@ class UserAuthSignUpSerializer(serializers.ModelSerializer):
             "first_name": {"required": True},
             "last_name": {"required": True},
         }
-
-
