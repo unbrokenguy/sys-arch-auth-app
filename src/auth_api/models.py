@@ -3,11 +3,17 @@ from django.contrib.auth.models import AbstractUser, UserManager
 
 
 class CustomUserManager(UserManager):
+    """
+    Custom User manager to make username == email.
+    """
     def create_superuser(self, email=None, password=None, **extra_fields):
         super().create_superuser(username=email, email=email, password=password)
 
 
 class User(AbstractUser):
+    """
+    User Django ORM model, inherits from AbstractUser
+    """
     email = models.EmailField(blank=True, unique=True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

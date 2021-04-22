@@ -8,10 +8,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.viewsets import mixins
-from rest_framework.authtoken.serializers import AuthTokenSerializer
-
 from auth_api.models import User
-from auth_api.serializers import UserAuthSignUpSerializer, UserAuthSignInSerializer, UserAuthOutputSerializer, \
+from auth_api.serializers import UserAuthSignUpSerializer, UserAuthOutputSerializer, \
     UserSerializer
 
 
@@ -28,12 +26,20 @@ class UserViewSet(GenericViewSet, mixins.ListModelMixin):
 
 
 class AuthViewSet(GenericViewSet):
+    """
+    Auth View Set, handle sign in and sign up process.
+    """
     serializer_class = UserAuthOutputSerializer
     permission_classes = [AllowAny]
 
-    @swagger_auto_schema(request_body=UserAuthSignInSerializer)
     @action(methods=["POST"], detail=False)
     def sign_in(self, request, *args, **kwargs):
+        """Post method <api>/auth/sign_in/
+        Returns:
+            User model with auth_token field or 400.
+        Raises:
+            Validation Error if User does not exist or no email in request data.
+        """
         data = request.data
         try:
             user = authenticate(request, email=data["email"], password=data["password"], )
@@ -47,9 +53,14 @@ class AuthViewSet(GenericViewSet):
 
         return Response(self.serializer_class(user, context={"request": request}).data)
 
-    @swagger_auto_schema(request_body=UserAuthSignUpSerializer)
     @action(methods=["POST"], detail=False)
     def sign_up(self, request, *args, **kwargs):
+        """Post method <api>/auth/sign_up/
+        Returns:
+            User model with auth_token field or 400 if password too weak.
+        Raises:
+            Validation if not all fields are present in request data.
+        """
         serializer = UserAuthSignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 

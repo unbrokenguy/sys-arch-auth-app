@@ -1,3 +1,8 @@
+"""Auth Api urls.
+POST /auth/sign_in/ - Sign In view.
+POST /auth/sign_up/ - Sign Up view.
+Get /user/ - Retrieve authenticated User.
+"""
 from rest_framework.routers import SimpleRouter
 
 from auth_api.views import AuthViewSet, UserViewSet
